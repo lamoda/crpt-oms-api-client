@@ -1,0 +1,43 @@
+{
+    "name": "lamoda/crpt-oms-api-client",
+    "description": "Client for CRPT OMS system",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Lamoda developers",
+            "homepage": "https://tech.lamoda.ru/"
+        }
+    ],
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "Lamoda\\OmsClient\\": "./src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Lamoda\\OmsClient\\Tests\\": "./tests/"
+        }
+    },
+    "require": {
+        "php": "^7.2",
+        "doctrine/annotations": "^1.6",
+        "doctrine/cache": "^1.8",
+        "guzzlehttp/guzzle": "^6.3",
+        "symfony/property-access": "^3.4 | ^4.0",
+        "symfony/serializer": "^3.4 | ^4.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.5"
+    },
+    "config": {
+        "platform": {
+            "php": "7.2"
+        },
+        "preferred-install": {
+            "*": "dist"
+        },
+        "sort-packages": true
+    }
+}
