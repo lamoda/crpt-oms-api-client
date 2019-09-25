@@ -33,12 +33,14 @@ final class OmsApi
     }
 
     public function getICBufferStatus(
+        Extension $extension,
         string $token,
         string $omsId,
         string $orderId,
         string $gtin
     ): GetICBufferStatusResponse {
-        $result = $this->request($token, 'GET', '/api/v2/buffer/status', [
+        $url = sprintf('/api/v2/%s/buffer/status', (string)$extension);
+        $result = $this->request($token, 'GET', $url, [
             'omsId' => $omsId,
             'orderId' => $orderId,
             'gtin' => $gtin,
@@ -49,6 +51,7 @@ final class OmsApi
     }
 
     public function getICsFromOrder(
+        Extension $extension,
         string $token,
         string $omsId,
         string $orderId,
@@ -56,7 +59,8 @@ final class OmsApi
         int $quantity,
         string $lastBlockId = '0'
     ): GetICsFromOrderResponse {
-        $result = $this->request($token, 'GET', '/api/v2/codes', [
+        $url = sprintf('/api/v2/%s/codes', (string)$extension);
+        $result = $this->request($token, 'GET', $url, [
             'omsId' => $omsId,
             'orderId' => $orderId,
             'gtin' => $gtin,
@@ -68,12 +72,20 @@ final class OmsApi
         return $this->serializer->deserialize(GetICsFromOrderResponse::class, $result);
     }
 
-    public function closeICArray(string $token, string $omsId, string $orderId, string $gtin): CloseICArrayResponse
-    {
-        $result = $this->request($token, 'GET', '/api/v2/buffer/close', [
+    public function closeICArray(
+        Extension $extension,
+        string $token,
+        string $omsId,
+        string $orderId,
+        string $gtin,
+        string $lastBlockId
+    ): CloseICArrayResponse {
+        $url = sprintf('/api/v2/%s/buffer/close', (string)$extension);
+        $result = $this->request($token, 'POST', $url, [
             'omsId' => $omsId,
             'orderId' => $orderId,
             'gtin' => $gtin,
+            'lastBlockId' => $lastBlockId,
         ]);
 
         /* @noinspection PhpIncompatibleReturnTypeInspection */

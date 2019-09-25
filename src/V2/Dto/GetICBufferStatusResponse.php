@@ -6,7 +6,10 @@ namespace Lamoda\OmsClient\V2\Dto;
 
 final class GetICBufferStatusResponse
 {
+    public const BUFFER_STATUS_PENDING = 'pending';
     public const BUFFER_STATUS_ACTIVE = 'active';
+    public const BUFFER_STATUS_EXHAUSTED = 'exhausted';
+    public const BUFFER_STATUS_REJECTED = 'rejected';
     public const BUFFER_STATUS_CLOSED = 'closed';
 
     /**
@@ -41,6 +44,10 @@ final class GetICBufferStatusResponse
      * @var string
      */
     private $bufferStatus;
+    /**
+     * @var string | null
+     */
+    private $rejectionReason;
 
     /**
      * GetICBufferStatusResponse constructor.
@@ -115,5 +122,15 @@ final class GetICBufferStatusResponse
     public function getBufferStatus(): string
     {
         return $this->bufferStatus;
+    }
+
+    public function getRejectionReason(): ?string
+    {
+        return $this->rejectionReason;
+    }
+
+    public function setRejectionReason(?string $rejectionReason): void
+    {
+        $this->rejectionReason = $rejectionReason;
     }
 }
