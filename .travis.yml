@@ -2,17 +2,26 @@ language: php
 
 php:
     - 7.2
+    - 7.3
+    - 7.4snapshot
     - nightly
-
+env:
+    matrix:
+        - DEPENDENCIES=high
+        - DEPENDENCIES=low
+    global:
+        - DEFAULT_COMPOSER_FLAGS="--prefer-dist --no-interaction --no-ansi --no-progress --no-suggest"
 sudo: false
 
 matrix:
     fast_finish: true
     allow_failures:
         - php: nightly
+        - php: 7.4snapshot
 
 before_install:
     - travis_retry composer self-update
 
 install:
-    - composer --prefer-dist install
+    - if [[ "$DEPENDENCIES" = 'high' ]]; then travis_retry composer update $DEFAULT_COMPOSER_FLAGS; fi
+    - if [[ "$DEPENDENCIES" = 'low' ]]; then travis_retry composer update $DEFAULT_COMPOSER_FLAGS --prefer-lowest; fi

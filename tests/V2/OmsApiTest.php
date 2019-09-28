@@ -12,6 +12,8 @@ use Lamoda\OmsClient\Exception\OmsGeneralErrorException;
 use Lamoda\OmsClient\Exception\OmsRequestErrorException;
 use Lamoda\OmsClient\Serializer\SerializerInterface;
 use Lamoda\OmsClient\V2\Dto\CloseICArrayResponse;
+use Lamoda\OmsClient\V2\Dto\CreateOrderForEmissionICRequestLight;
+use Lamoda\OmsClient\V2\Dto\CreateOrderForEmissionICResponse;
 use Lamoda\OmsClient\V2\Dto\GetICBufferStatusResponse;
 use Lamoda\OmsClient\V2\Dto\GetICsFromOrderResponse;
 use Lamoda\OmsClient\V2\Extension;
@@ -117,6 +119,69 @@ final class OmsApiTest extends TestCase
                 'pharma',
             ],
         ];
+    }
+
+    public function testCreateOrderForEmissionIC(): void
+    {
+        $createOrderForEmissionICRequestLight = new CreateOrderForEmissionICRequestLight(
+            '',
+            '',
+            '',
+            '',
+            '',
+            new \DateTimeImmutable(),
+            []
+        );
+
+        $serializedRequest = '{"test": "value"}';
+
+        $this->serializer->expects($this->once())
+            ->method('serialize')
+            ->with(
+                $createOrderForEmissionICRequestLight
+            )
+            ->willReturn($serializedRequest);
+
+        $this->client->expects($this->once())
+            ->method('request')
+            ->with(
+                'POST',
+                'api/v2/light/orders',
+                [
+                    RequestOptions::BODY => $serializedRequest,
+                    RequestOptions::HEADERS => [
+                        'Content-Type' => 'application/json',
+                        'clientToken' => self::TOKEN,
+                    ],
+                    RequestOptions::QUERY => [
+                        'omsId' => self::OMS_ID,
+                    ],
+                    RequestOptions::HTTP_ERRORS => true,
+                ]
+            )
+            ->willReturn(
+                (new Response())
+                    ->withBody(stream_for(self::API_RESPONSE))
+            );
+
+        $expectedResult = new CreateOrderForEmissionICResponse(self::OMS_ID, self::ORDER_ID, 100);
+        $this->serializer->expects($this->once())
+            ->method('deserialize')
+            ->with(
+                CreateOrderForEmissionICResponse::class,
+                self::API_RESPONSE
+            )
+            ->willReturn($expectedResult);
+
+
+        $result = $this->api->createOrderForEmissionIC(
+            Extension::light(),
+            self::TOKEN,
+            self::OMS_ID,
+            $createOrderForEmissionICRequestLight
+        );
+
+        $this->assertEquals($expectedResult, $result);
     }
 
     public function testGetICBufferStatus(): void

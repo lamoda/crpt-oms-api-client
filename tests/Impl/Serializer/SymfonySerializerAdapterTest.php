@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Lamoda\OmsClient\Tests\Impl\Serializer;
 
-use Lamoda\OmsClient\Impl\Serializer\SymfonySerializerAdapter;
 use Lamoda\OmsClient\Impl\Serializer\SymfonySerializerAdapterFactory;
+use Lamoda\OmsClient\Serializer\SerializerInterface;
+use Lamoda\OmsClient\V2\Dto\CreateOrderForEmissionICRequestLight;
 use Lamoda\OmsClient\V2\Dto\GetICsFromOrderResponse;
+use Lamoda\OmsClient\V2\Dto\OrderProductLight;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -15,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 final class SymfonySerializerAdapterTest extends TestCase
 {
     /**
-     * @var SymfonySerializerAdapter
+     * @var SerializerInterface
      */
     private $serializer;
 
@@ -29,7 +31,7 @@ final class SymfonySerializerAdapterTest extends TestCase
     /**
      * @dataProvider dataDeserialize
      */
-    public function testDeserialize(string $class, $data, object $expected): void
+    public function testDeserialize(string $class, string $data, object $expected): void
     {
         $result = $this->serializer->deserialize($class, $data);
 
@@ -45,11 +47,64 @@ final class SymfonySerializerAdapterTest extends TestCase
                 new GetICsFromOrderResponse(
                     'CDF12109-10D3-11E6-8B6F-0050569977A1',
                     [
-                        "010460165303004621\x3drxDV3M\x1d93VXQI"
+                        "010460165303004621\x3drxDV3M\x1d93VXQI",
                     ],
                     '20'
-                )
-            ]
+                ),
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider dataSerialize
+     */
+    public function testSerialize(object $data, string $expected): void
+    {
+        $result = $this->serializer->serialize($data);
+
+        $this->assertJsonStringEqualsJsonString($expected, $result);
+    }
+
+    public function dataSerialize(): array
+    {
+        return [
+            [
+                new CreateOrderForEmissionICRequestLight(
+                    'Ivan Ivanov',
+                    CreateOrderForEmissionICRequestLight::RELEASE_METHOD_TYPE_IMPORT,
+                    CreateOrderForEmissionICRequestLight::CREATE_METHOD_TYPE_SELF_MADE,
+                    'a1f83800-7329-4749-97f0-bbd831aaa9d1',
+                    '1234',
+                    new \DateTimeImmutable('2019-09-28'),
+                    [
+                        new OrderProductLight(
+                            '0461234567',
+                            12,
+                            OrderProductLight::SERIAL_NUMBER_TYPE_OPERATOR,
+                            2
+                        ),
+                    ]
+                ),
+                <<<JSON
+{
+  "contactPerson": "Ivan Ivanov",
+  "releaseMethodType": "IMPORT",
+  "createMethodType": "SELF_MADE",
+  "productionOrderId": "a1f83800-7329-4749-97f0-bbd831aaa9d1",
+  "contractNumber": "1234",
+  "contractDate": "2019-09-28",
+  "products": [
+    {
+      "gtin": "0461234567",
+      "quantity": 12,
+      "serialNumberType": "OPERATOR",
+      "templateId": 2,
+      "serialNumbers": null
+    }
+  ]
+}
+JSON
+            ],
         ];
     }
 }

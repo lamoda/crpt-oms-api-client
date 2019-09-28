@@ -7,4 +7,6 @@ namespace Lamoda\OmsClient\Serializer;
 interface SerializerInterface
 {
     public function deserialize(string $class, $data): object;
+
+    public function serialize(object $data): string;
 }
