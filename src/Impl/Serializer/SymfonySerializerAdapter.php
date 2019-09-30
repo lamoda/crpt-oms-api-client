@@ -21,6 +21,17 @@ final class SymfonySerializerAdapter implements SerializerInterface
 
     public function deserialize(string $class, $data): object
     {
-        return $this->serializer->deserialize($data, $class, 'json');
+        $result = $this->serializer->deserialize($data, $class, 'json');
+        assert(is_object($result));
+
+        return $result;
+    }
+
+    public function serialize(object $data): string
+    {
+        $result = $this->serializer->serialize($data, 'json');
+        assert(is_string($result));
+
+        return $result;
     }
 }

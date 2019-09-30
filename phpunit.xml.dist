@@ -29,6 +29,7 @@
                 <directory>./tests/</directory>
                 <directory>./src/V1/</directory>
                 <directory>./src/V2/Dto</directory>
+                <directory>./src/Exception</directory>
             </exclude>
         </whitelist>
     </filter>

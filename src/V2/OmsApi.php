@@ -12,6 +12,8 @@ use Lamoda\OmsClient\Exception\OmsGeneralErrorException;
 use Lamoda\OmsClient\Exception\OmsRequestErrorException;
 use Lamoda\OmsClient\Serializer\SerializerInterface;
 use Lamoda\OmsClient\V2\Dto\CloseICArrayResponse;
+use Lamoda\OmsClient\V2\Dto\CreateOrderForEmissionICRequest;
+use Lamoda\OmsClient\V2\Dto\CreateOrderForEmissionICResponse;
 use Lamoda\OmsClient\V2\Dto\GetICBufferStatusResponse;
 use Lamoda\OmsClient\V2\Dto\GetICsFromOrderResponse;
 
@@ -30,6 +32,23 @@ final class OmsApi
     {
         $this->client = $client;
         $this->serializer = $serializer;
+    }
+
+    public function createOrderForEmissionIC(
+        Extension $extension,
+        string $token,
+        string $omsId,
+        CreateOrderForEmissionICRequest $request
+    ): CreateOrderForEmissionICResponse {
+        $url = sprintf('/api/v2/%s/orders', (string)$extension);
+        $body = $this->serializer->serialize($request);
+
+        $result = $this->request($token, 'POST', $url, [
+            'omsId' => $omsId,
+        ], $body);
+
+        /* @noinspection PhpIncompatibleReturnTypeInspection */
+        return $this->serializer->deserialize(CreateOrderForEmissionICResponse::class, $result);
     }
 
     public function getICBufferStatus(
