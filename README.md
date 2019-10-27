@@ -46,3 +46,11 @@ $omsApi = new OmsApi($client, $serializer);
  */
 // $response = $omsApi->getICBufferStatus();
 ```
+
+## Signing of OMS requests
+
+It is also possible to send signed OMS requests for orders.
+
+To do that implement `\Lamoda\OmsClient\V2\Signer\SignerInterface`. 
+
+Signer must return signature for the given data (no data itself transformation is required).

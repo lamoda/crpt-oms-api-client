@@ -10,6 +10,7 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RequestOptions;
 use Lamoda\OmsClient\Exception\OmsGeneralErrorException;
 use Lamoda\OmsClient\Exception\OmsRequestErrorException;
+use Lamoda\OmsClient\Exception\OmsSignerErrorException;
 use Lamoda\OmsClient\Serializer\SerializerInterface;
 use Lamoda\OmsClient\V2\Dto\CloseICArrayResponse;
 use Lamoda\OmsClient\V2\Dto\CreateOrderForEmissionICRequestLight;
@@ -18,6 +19,8 @@ use Lamoda\OmsClient\V2\Dto\GetICBufferStatusResponse;
 use Lamoda\OmsClient\V2\Dto\GetICsFromOrderResponse;
 use Lamoda\OmsClient\V2\Extension;
 use Lamoda\OmsClient\V2\OmsApi;
+use Lamoda\OmsClient\V2\Signer\SignerInterface;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
@@ -182,6 +185,112 @@ final class OmsApiTest extends TestCase
         );
 
         $this->assertEquals($expectedResult, $result);
+    }
+
+    public function testCreateOrderForEmissionICWithSignature(): void
+    {
+        $createOrderForEmissionICRequestLight = new CreateOrderForEmissionICRequestLight(
+            '',
+            '',
+            '',
+            '',
+            '',
+            new \DateTimeImmutable(),
+            []
+        );
+
+        $serializedRequest = '{"test": "value"}';
+        $signature = 'signature';
+
+        $this->serializer->expects($this->once())
+            ->method('serialize')
+            ->with(
+                $createOrderForEmissionICRequestLight
+            )
+            ->willReturn($serializedRequest);
+
+
+        $this->client->expects($this->once())
+            ->method('request')
+            ->with(
+                'POST',
+                'api/v2/light/orders',
+                [
+                    RequestOptions::BODY => $serializedRequest,
+                    RequestOptions::HEADERS => [
+                        'Content-Type' => 'application/json',
+                        'clientToken' => self::TOKEN,
+                        'X-Signature' => $signature
+                    ],
+                    RequestOptions::QUERY => [
+                        'omsId' => self::OMS_ID,
+                    ],
+                    RequestOptions::HTTP_ERRORS => true,
+                ]
+            )
+            ->willReturn(
+                (new Response())
+                    ->withBody(stream_for(self::API_RESPONSE))
+            );
+
+        $expectedResult = new CreateOrderForEmissionICResponse(self::OMS_ID, self::ORDER_ID, 100);
+        $this->serializer
+            ->method('deserialize')
+            ->willReturn($expectedResult);
+
+        $signer = $this->createMock(SignerInterface::class);
+        $signer->method('sign')
+            ->with(base64_encode($serializedRequest))
+            ->willReturn($signature);
+
+        $result = $this->api->createOrderForEmissionIC(
+            Extension::light(),
+            self::TOKEN,
+            self::OMS_ID,
+            $createOrderForEmissionICRequestLight,
+            $signer
+        );
+
+        $this->assertEquals($expectedResult, $result);
+    }
+
+    public function testCreateOrderForEmissionFinishedWithSignerException(): void
+    {
+        $createOrderForEmissionICRequestLight = new CreateOrderForEmissionICRequestLight(
+            '',
+            '',
+            '',
+            '',
+            '',
+            new \DateTimeImmutable(),
+            []
+        );
+
+        $serializedRequest = '{"test": "value"}';
+
+        $this->serializer->expects($this->once())
+            ->method('serialize')
+            ->with(
+                $createOrderForEmissionICRequestLight
+            )
+            ->willReturn($serializedRequest);
+
+
+        $this->client->expects($this->never())
+            ->method('request');
+
+        $signer = $this->createMock(SignerInterface::class);
+        $signer->method('sign')
+            ->willThrowException(new \Exception('Something happened in signer'));
+
+        $this->expectException(OmsSignerErrorException::class);
+        $this->api->createOrderForEmissionIC(
+            Extension::light(),
+            self::TOKEN,
+            self::OMS_ID,
+            $createOrderForEmissionICRequestLight,
+            $signer
+        );
     }
 
     public function testGetICBufferStatus(): void
