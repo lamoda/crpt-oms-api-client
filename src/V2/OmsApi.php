@@ -10,12 +10,14 @@ use GuzzleHttp\RequestOptions;
 use Lamoda\OmsClient\Exception\OmsClientExceptionInterface;
 use Lamoda\OmsClient\Exception\OmsGeneralErrorException;
 use Lamoda\OmsClient\Exception\OmsRequestErrorException;
+use Lamoda\OmsClient\Exception\OmsSignerErrorException;
 use Lamoda\OmsClient\Serializer\SerializerInterface;
 use Lamoda\OmsClient\V2\Dto\CloseICArrayResponse;
 use Lamoda\OmsClient\V2\Dto\CreateOrderForEmissionICRequest;
 use Lamoda\OmsClient\V2\Dto\CreateOrderForEmissionICResponse;
 use Lamoda\OmsClient\V2\Dto\GetICBufferStatusResponse;
 use Lamoda\OmsClient\V2\Dto\GetICsFromOrderResponse;
+use Lamoda\OmsClient\V2\Signer\SignerInterface;
 
 final class OmsApi
 {
@@ -38,14 +40,18 @@ final class OmsApi
         Extension $extension,
         string $token,
         string $omsId,
-        CreateOrderForEmissionICRequest $request
+        CreateOrderForEmissionICRequest $request,
+        SignerInterface $signer = null
     ): CreateOrderForEmissionICResponse {
         $url = sprintf('/api/v2/%s/orders', (string)$extension);
         $body = $this->serializer->serialize($request);
 
+        $headers = [];
+        $headers = $this->appendSignatureHeader($headers, $body, $signer);
+
         $result = $this->request($token, 'POST', $url, [
             'omsId' => $omsId,
-        ], $body);
+        ], $body, $headers);
 
         /* @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->serializer->deserialize(CreateOrderForEmissionICResponse::class, $result);
@@ -114,14 +120,20 @@ final class OmsApi
     /**
      * @throws OmsRequestErrorException
      */
-    private function request(string $token, string $method, string $uri, array $query = [], $body = null): string
-    {
+    private function request(
+        string $token,
+        string $method,
+        string $uri,
+        array $query = [],
+        $body = null,
+        $headers = []
+    ): string {
         $options = [
             RequestOptions::BODY => $body,
-            RequestOptions::HEADERS => [
+            RequestOptions::HEADERS => array_merge($headers, [
                 'Content-Type' => 'application/json',
                 'clientToken' => $token,
-            ],
+            ]),
             RequestOptions::QUERY => $query,
             RequestOptions::HTTP_ERRORS => true,
         ];
@@ -149,5 +161,22 @@ final class OmsApi
         }
 
         return OmsGeneralErrorException::becauseOfError($exception);
+    }
+
+    private function appendSignatureHeader(array $headers, string $data, SignerInterface $signer = null): array
+    {
+        if ($signer === null) {
+            return $headers;
+        }
+
+        $base64encoded = base64_encode($data);
+
+        try {
+            $headers['X-Signature'] = $signer->sign($base64encoded);
+        } catch (\Throwable $exception) {
+            throw OmsSignerErrorException::becauseOfError($exception);
+        }
+
+        return $headers;
     }
 }
