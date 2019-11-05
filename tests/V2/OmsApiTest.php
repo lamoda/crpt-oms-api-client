@@ -102,7 +102,7 @@ final class OmsApiTest extends TestCase
                     ->withBody(stream_for(self::API_RESPONSE))
             );
 
-        $expectedResult = new GetICBufferStatusResponse('', '', '', 0, 0, 0, [], '');
+        $expectedResult = new GetICBufferStatusResponse('', '', '', 0, 0, 0, '');
         $this->serializer->expects($this->once())
             ->method('deserialize')
             ->willReturn($expectedResult);
@@ -240,7 +240,7 @@ final class OmsApiTest extends TestCase
 
         $signer = $this->createMock(SignerInterface::class);
         $signer->method('sign')
-            ->with(base64_encode($serializedRequest))
+            ->with($serializedRequest)
             ->willReturn($signature);
 
         $result = $this->api->createOrderForEmissionIC(
@@ -319,7 +319,7 @@ final class OmsApiTest extends TestCase
                     ->withBody(stream_for(self::API_RESPONSE))
             );
 
-        $expectedResult = new GetICBufferStatusResponse('', '', '', 0, 0, 0, [], '');
+        $expectedResult = new GetICBufferStatusResponse('', '', '', 0, 0, 0, '');
         $this->serializer->expects($this->once())
             ->method('deserialize')
             ->with(

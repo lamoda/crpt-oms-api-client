@@ -169,10 +169,8 @@ final class OmsApi
             return $headers;
         }
 
-        $base64encoded = base64_encode($data);
-
         try {
-            $headers['X-Signature'] = $signer->sign($base64encoded);
+            $headers['X-Signature'] = $signer->sign($data);
         } catch (\Throwable $exception) {
             throw OmsSignerErrorException::becauseOfError($exception);
         }

@@ -17,13 +17,13 @@ final class CreateOrderForEmissionICResponse
     /**
      * @var int
      */
-    private $expectedCompletionTime;
+    private $expectedCompleteTimestamp;
 
-    public function __construct(string $omsId, string $orderId, int $expectedCompletionTime)
+    public function __construct(string $omsId, string $orderId, int $expectedCompleteTimestamp)
     {
         $this->omsId = $omsId;
         $this->orderId = $orderId;
-        $this->expectedCompletionTime = $expectedCompletionTime;
+        $this->expectedCompleteTimestamp = $expectedCompleteTimestamp;
     }
 
     public function getOmsId(): string
@@ -36,8 +36,8 @@ final class CreateOrderForEmissionICResponse
         return $this->orderId;
     }
 
-    public function getExpectedCompletionTime(): int
+    public function getExpectedCompleteTimestamp(): int
     {
-        return $this->expectedCompletionTime;
+        return $this->expectedCompleteTimestamp;
     }
 }
