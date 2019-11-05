@@ -6,11 +6,11 @@ namespace Lamoda\OmsClient\V2\Dto;
 
 final class GetICBufferStatusResponse
 {
-    public const BUFFER_STATUS_PENDING = 'pending';
-    public const BUFFER_STATUS_ACTIVE = 'active';
-    public const BUFFER_STATUS_EXHAUSTED = 'exhausted';
-    public const BUFFER_STATUS_REJECTED = 'rejected';
-    public const BUFFER_STATUS_CLOSED = 'closed';
+    public const BUFFER_STATUS_PENDING = 'PENDING';
+    public const BUFFER_STATUS_ACTIVE = 'ACTIVE';
+    public const BUFFER_STATUS_EXHAUSTED = 'EXHAUSTED';
+    public const BUFFER_STATUS_REJECTED = 'REJECTED';
+    public const BUFFER_STATUS_CLOSED = 'CLOSED';
 
     /**
      * @var string
@@ -39,7 +39,7 @@ final class GetICBufferStatusResponse
     /**
      * @var PoolInfo[]
      */
-    private $poolInfos;
+    private $poolInfos = [];
     /**
      * @var string
      */
@@ -58,7 +58,6 @@ final class GetICBufferStatusResponse
      * @param int $totalCodes
      * @param int $unavailableCodes
      * @param int $leftInBuffer
-     * @param PoolInfo[] $poolInfos
      * @param string $bufferStatus
      */
     public function __construct(
@@ -68,7 +67,6 @@ final class GetICBufferStatusResponse
         int $totalCodes,
         int $unavailableCodes,
         int $leftInBuffer,
-        array $poolInfos,
         string $bufferStatus
     ) {
         $this->omsId = $omsId;
@@ -77,7 +75,6 @@ final class GetICBufferStatusResponse
         $this->totalCodes = $totalCodes;
         $this->unavailableCodes = $unavailableCodes;
         $this->leftInBuffer = $leftInBuffer;
-        $this->poolInfos = $poolInfos;
         $this->bufferStatus = $bufferStatus;
     }
 
@@ -117,6 +114,14 @@ final class GetICBufferStatusResponse
     public function getPoolInfos(): array
     {
         return $this->poolInfos;
+    }
+
+    /**
+     * @param PoolInfo[] $poolInfos
+     */
+    public function setPoolInfos(array $poolInfos): void
+    {
+        $this->poolInfos = $poolInfos;
     }
 
     public function getBufferStatus(): string
