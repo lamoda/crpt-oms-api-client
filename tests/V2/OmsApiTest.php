@@ -52,7 +52,7 @@ final class OmsApiTest extends TestCase
      */
     private $api;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
