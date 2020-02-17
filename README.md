@@ -18,7 +18,7 @@ composer require lamoda/crpt-oms-api-client
 
 This library implements API client for the Order Management Station (OMS) of the CRPT (https://crpt.ru/)
 
-Library implements V1 (deprecated) and V2 version of OMS Api's
+Library implements V2 version of OMS Api's
 
 Currently this client implements just a subset of the OMS Api methods.
 
