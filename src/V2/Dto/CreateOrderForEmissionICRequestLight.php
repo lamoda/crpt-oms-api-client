@@ -11,6 +11,7 @@ final class CreateOrderForEmissionICRequestLight extends CreateOrderForEmissionI
     public const RELEASE_METHOD_TYPE_PRODUCTION = 'PRODUCTION';
     public const RELEASE_METHOD_TYPE_IMPORT = 'IMPORT';
     public const RELEASE_METHOD_TYPE_REMAINS = 'REMAINS';
+    public const RELEASE_METHOD_TYPE_REMARK = 'REMARK';
 
     public const CREATE_METHOD_TYPE_SELF_MADE = 'SELF_MADE';
     public const CREATE_METHOD_TYPE_CEM = 'CEM';
