@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches:
+    tags:
+  pull_request:
+
+env:
+  DEFAULT_COMPOSER_FLAGS: "--prefer-dist --no-interaction --no-ansi --no-progress --no-suggest"
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        php: [7.2, 7.3, 7.4]
+        os: [ubuntu-latest]
+        env: [
+          'low',
+          'high',
+        ]
+    name: PHP ${{ matrix.php }} Test ${{ matrix.env }} on ${{ matrix.os }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php }}
+        extensions: json, mbstring
+
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+    - name: Cache dependencies
+      uses: actions/cache@v1
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+        restore-keys: ${{ runner.os }}-composer-
+
+    - name: Composer update with high level
+      run: |
+        if [ "$DEPENDENCIES" = 'high' ]; then
+            composer update $DEFAULT_COMPOSER_FLAGS
+        fi;
+
+        if [ "$DEPENDENCIES" = 'low' ]; then
+            composer update $DEFAULT_COMPOSER_FLAGS --prefer-lowest
+        fi;
+      env:
+        DEPENDENCIES: ${{ matrix.env}}
+    - name: Run tests
+      run: ./vendor/bin/phpunit
+
