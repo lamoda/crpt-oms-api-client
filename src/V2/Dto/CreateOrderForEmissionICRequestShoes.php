@@ -4,51 +4,37 @@ declare(strict_types=1);
 
 namespace Lamoda\OmsClient\V2\Dto;
 
-use DateTimeInterface;
-
-final class CreateOrderForEmissionICRequestLight extends CreateOrderForEmissionICRequest
+final class CreateOrderForEmissionICRequestShoes extends CreateOrderForEmissionICRequest
 {
     /**
-     * @var string
+     * @var string Контактное лицо
      */
     private $contactPerson;
     /**
-     * @var string
+     * @var string Способ выпуска товаров в оборот
      */
     private $releaseMethodType;
     /**
-     * @var string
+     * @var string Способ изготовления СИ
      */
     private $createMethodType;
     /**
-     * @var string
+     * @var string Идентификатор производственного заказа
      */
     private $productionOrderId;
-    /**
-     * @var string
-     */
-    private $contractNumber;
-    /**
-     * @var DateTimeInterface
-     */
-    private $contractDate;
 
     /**
      * @param string $contactPerson
      * @param string $releaseMethodType
      * @param string $createMethodType
      * @param string $productionOrderId
-     * @param string $contractNumber
-     * @param DateTimeInterface $contractDate
-     * @param OrderProduct[] $products
+     * @param OrderProductShoes[] $products
      */
     public function __construct(
         string $contactPerson,
         string $releaseMethodType,
         string $createMethodType,
         string $productionOrderId,
-        string $contractNumber,
-        DateTimeInterface $contractDate,
         array $products
     ) {
         parent::__construct($products);
@@ -57,8 +43,6 @@ final class CreateOrderForEmissionICRequestLight extends CreateOrderForEmissionI
         $this->releaseMethodType = $releaseMethodType;
         $this->createMethodType = $createMethodType;
         $this->productionOrderId = $productionOrderId;
-        $this->contractNumber = $contractNumber;
-        $this->contractDate = $contractDate;
     }
 
     public function getContactPerson(): string
@@ -79,15 +63,5 @@ final class CreateOrderForEmissionICRequestLight extends CreateOrderForEmissionI
     public function getProductionOrderId(): string
     {
         return $this->productionOrderId;
-    }
-
-    public function getContractNumber(): string
-    {
-        return $this->contractNumber;
-    }
-
-    public function getContractDate(): DateTimeInterface
-    {
-        return $this->contractDate;
     }
 }
