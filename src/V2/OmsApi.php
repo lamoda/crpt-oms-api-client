@@ -29,20 +29,26 @@ final class OmsApi
      * @var SerializerInterface
      */
     private $serializer;
+    /**
+     * @var RequestToExtension
+     */
+    private $requestToExtension;
 
     public function __construct(ClientInterface $client, SerializerInterface $serializer)
     {
+        $this->requestToExtension = new RequestToExtension();
         $this->client = $client;
         $this->serializer = $serializer;
     }
 
     public function createOrderForEmissionIC(
-        Extension $extension,
         string $token,
         string $omsId,
         CreateOrderForEmissionICRequest $request,
         SignerInterface $signer = null
     ): CreateOrderForEmissionICResponse {
+        $extension = $this->requestToExtension->getExtensionByCreateOrderForEmissionICRequest($request);
+
         $url = sprintf('/api/v2/%s/orders', (string)$extension);
         $body = $this->serializer->serialize($request);
 

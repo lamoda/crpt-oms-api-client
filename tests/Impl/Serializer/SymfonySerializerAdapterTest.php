@@ -7,6 +7,7 @@ namespace Lamoda\OmsClient\Tests\Impl\Serializer;
 use Lamoda\OmsClient\Impl\Serializer\SymfonySerializerAdapterFactory;
 use Lamoda\OmsClient\Serializer\SerializerInterface;
 use Lamoda\OmsClient\V2\Dto\CreateOrderForEmissionICRequestLight;
+use Lamoda\OmsClient\V2\Dto\CreateOrderForEmissionICRequestLp;
 use Lamoda\OmsClient\V2\Dto\GetICsFromOrderResponse;
 use Lamoda\OmsClient\V2\Dto\OrderProductLight;
 use PHPUnit\Framework\TestCase;
@@ -69,13 +70,11 @@ final class SymfonySerializerAdapterTest extends TestCase
     {
         return [
             [
-                new CreateOrderForEmissionICRequestLight(
+                new CreateOrderForEmissionICRequestLp(
                     'Ivan Ivanov',
                     CreateOrderForEmissionICRequestLight::RELEASE_METHOD_TYPE_IMPORT,
                     CreateOrderForEmissionICRequestLight::CREATE_METHOD_TYPE_SELF_MADE,
                     'a1f83800-7329-4749-97f0-bbd831aaa9d1',
-                    '1234',
-                    new \DateTimeImmutable('2019-09-28'),
                     [
                         new OrderProductLight(
                             '0461234567',
@@ -91,8 +90,6 @@ final class SymfonySerializerAdapterTest extends TestCase
   "releaseMethodType": "IMPORT",
   "createMethodType": "SELF_MADE",
   "productionOrderId": "a1f83800-7329-4749-97f0-bbd831aaa9d1",
-  "contractNumber": "1234",
-  "contractDate": "2019-09-28",
   "products": [
     {
       "gtin": "0461234567",

@@ -20,6 +20,11 @@ final class Extension
         $this->name = $name;
     }
 
+    public static function lp(): self
+    {
+        return new static('lp');
+    }
+
     public static function light(): self
     {
         return new static('light');
@@ -48,6 +53,11 @@ final class Extension
     public static function photo(): self
     {
         return new static('photo');
+    }
+
+    public static function shoes(): self
+    {
+        return new static('shoes');
     }
 
     public static function perfum(): self

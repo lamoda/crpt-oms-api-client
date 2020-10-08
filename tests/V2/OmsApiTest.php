@@ -14,6 +14,7 @@ use Lamoda\OmsClient\Exception\OmsSignerErrorException;
 use Lamoda\OmsClient\Serializer\SerializerInterface;
 use Lamoda\OmsClient\V2\Dto\CloseICArrayResponse;
 use Lamoda\OmsClient\V2\Dto\CreateOrderForEmissionICRequestLight;
+use Lamoda\OmsClient\V2\Dto\CreateOrderForEmissionICRequestLp;
 use Lamoda\OmsClient\V2\Dto\CreateOrderForEmissionICResponse;
 use Lamoda\OmsClient\V2\Dto\GetICBufferStatusResponse;
 use Lamoda\OmsClient\V2\Dto\GetICsFromOrderResponse;
@@ -126,13 +127,11 @@ final class OmsApiTest extends TestCase
 
     public function testCreateOrderForEmissionIC(): void
     {
-        $createOrderForEmissionICRequestLight = new CreateOrderForEmissionICRequestLight(
+        $createOrderForEmissionICRequestLp = new CreateOrderForEmissionICRequestLp(
             '',
             '',
             '',
             '',
-            '',
-            new \DateTimeImmutable(),
             []
         );
 
@@ -141,7 +140,7 @@ final class OmsApiTest extends TestCase
         $this->serializer->expects($this->once())
             ->method('serialize')
             ->with(
-                $createOrderForEmissionICRequestLight
+                $createOrderForEmissionICRequestLp
             )
             ->willReturn($serializedRequest);
 
@@ -149,7 +148,7 @@ final class OmsApiTest extends TestCase
             ->method('request')
             ->with(
                 'POST',
-                'api/v2/light/orders',
+                'api/v2/lp/orders',
                 [
                     RequestOptions::BODY => $serializedRequest,
                     RequestOptions::HEADERS => [
@@ -178,10 +177,9 @@ final class OmsApiTest extends TestCase
 
 
         $result = $this->api->createOrderForEmissionIC(
-            Extension::light(),
             self::TOKEN,
             self::OMS_ID,
-            $createOrderForEmissionICRequestLight
+            $createOrderForEmissionICRequestLp
         );
 
         $this->assertEquals($expectedResult, $result);
@@ -189,13 +187,11 @@ final class OmsApiTest extends TestCase
 
     public function testCreateOrderForEmissionICWithSignature(): void
     {
-        $createOrderForEmissionICRequestLight = new CreateOrderForEmissionICRequestLight(
+        $createOrderForEmissionICRequestLp = new CreateOrderForEmissionICRequestLp(
             '',
             '',
             '',
             '',
-            '',
-            new \DateTimeImmutable(),
             []
         );
 
@@ -205,7 +201,7 @@ final class OmsApiTest extends TestCase
         $this->serializer->expects($this->once())
             ->method('serialize')
             ->with(
-                $createOrderForEmissionICRequestLight
+                $createOrderForEmissionICRequestLp
             )
             ->willReturn($serializedRequest);
 
@@ -214,7 +210,7 @@ final class OmsApiTest extends TestCase
             ->method('request')
             ->with(
                 'POST',
-                'api/v2/light/orders',
+                'api/v2/lp/orders',
                 [
                     RequestOptions::BODY => $serializedRequest,
                     RequestOptions::HEADERS => [
@@ -244,10 +240,9 @@ final class OmsApiTest extends TestCase
             ->willReturn($signature);
 
         $result = $this->api->createOrderForEmissionIC(
-            Extension::light(),
             self::TOKEN,
             self::OMS_ID,
-            $createOrderForEmissionICRequestLight,
+            $createOrderForEmissionICRequestLp,
             $signer
         );
 
@@ -256,13 +251,11 @@ final class OmsApiTest extends TestCase
 
     public function testCreateOrderForEmissionFinishedWithSignerException(): void
     {
-        $createOrderForEmissionICRequestLight = new CreateOrderForEmissionICRequestLight(
+        $createOrderForEmissionICRequestLp = new CreateOrderForEmissionICRequestLp(
             '',
             '',
             '',
             '',
-            '',
-            new \DateTimeImmutable(),
             []
         );
 
@@ -271,7 +264,7 @@ final class OmsApiTest extends TestCase
         $this->serializer->expects($this->once())
             ->method('serialize')
             ->with(
-                $createOrderForEmissionICRequestLight
+                $createOrderForEmissionICRequestLp
             )
             ->willReturn($serializedRequest);
 
@@ -285,10 +278,9 @@ final class OmsApiTest extends TestCase
 
         $this->expectException(OmsSignerErrorException::class);
         $this->api->createOrderForEmissionIC(
-            Extension::light(),
             self::TOKEN,
             self::OMS_ID,
-            $createOrderForEmissionICRequestLight,
+            $createOrderForEmissionICRequestLp,
             $signer
         );
     }
