@@ -15,7 +15,7 @@ final class SymfonySerializerAdapterFactoryTest extends TestCase
 {
     public function testCreate(): void
     {
-        $result = SymfonySerializerAdapterFactory::create();
+        $result = SymfonySerializerAdapterFactory::create(SymfonySerializerAdapterFactory::SYMFONY_VERSION_GREATER_OR_EQUAL_42);
 
         $this->assertInstanceOf(SymfonySerializerAdapter::class, $result);
     }

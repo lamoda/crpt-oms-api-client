@@ -26,7 +26,7 @@ final class SymfonySerializerAdapterTest extends TestCase
     {
         parent::setUp();
 
-        $this->serializer = SymfonySerializerAdapterFactory::create();
+        $this->serializer = SymfonySerializerAdapterFactory::create(SymfonySerializerAdapterFactory::SYMFONY_VERSION_GREATER_OR_EQUAL_42);
     }
 
     /**
