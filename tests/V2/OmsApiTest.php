@@ -18,6 +18,7 @@ use Lamoda\OmsClient\V2\Dto\CreateOrderForEmissionICRequestLp;
 use Lamoda\OmsClient\V2\Dto\CreateOrderForEmissionICResponse;
 use Lamoda\OmsClient\V2\Dto\GetICBufferStatusResponse;
 use Lamoda\OmsClient\V2\Dto\GetICsFromOrderResponse;
+use Lamoda\OmsClient\V2\Dto\PingResponse;
 use Lamoda\OmsClient\V2\Extension;
 use Lamoda\OmsClient\V2\OmsApi;
 use Lamoda\OmsClient\V2\Signer\SignerInterface;
@@ -412,6 +413,48 @@ final class OmsApiTest extends TestCase
             self::ORDER_ID,
             self::GTIN,
             self::LAST_BLOCK_ID
+        );
+
+        $this->assertEquals($expectedResult, $result);
+    }
+
+    public function testPing(): void
+    {
+        $this->client->expects($this->once())
+            ->method('request')
+            ->with(
+                'GET',
+                'api/v2/light/ping',
+                [
+                    RequestOptions::BODY => null,
+                    RequestOptions::HEADERS => [
+                        'Content-Type' => 'application/json',
+                        'clientToken' => self::TOKEN,
+                    ],
+                    RequestOptions::QUERY => [
+                        'omsId' => self::OMS_ID,
+                    ],
+                    RequestOptions::HTTP_ERRORS => true,
+                ]
+            )
+            ->willReturn(
+                (new Response())
+                    ->withBody(stream_for(self::API_RESPONSE))
+            );
+
+        $expectedResult = new PingResponse(self::OMS_ID);
+        $this->serializer->expects($this->once())
+            ->method('deserialize')
+            ->with(
+                PingResponse::class,
+                self::API_RESPONSE
+            )
+            ->willReturn($expectedResult);
+
+        $result = $this->api->ping(
+            Extension::light(),
+            self::TOKEN,
+            self::OMS_ID,
         );
 
         $this->assertEquals($expectedResult, $result);
