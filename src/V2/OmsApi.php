@@ -17,6 +17,7 @@ use Lamoda\OmsClient\V2\Dto\CreateOrderForEmissionICRequest;
 use Lamoda\OmsClient\V2\Dto\CreateOrderForEmissionICResponse;
 use Lamoda\OmsClient\V2\Dto\GetICBufferStatusResponse;
 use Lamoda\OmsClient\V2\Dto\GetICsFromOrderResponse;
+use Lamoda\OmsClient\V2\Dto\PingResponse;
 use Lamoda\OmsClient\V2\Signer\SignerInterface;
 
 final class OmsApi
@@ -121,6 +122,15 @@ final class OmsApi
 
         /* @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->serializer->deserialize(CloseICArrayResponse::class, $result);
+    }
+
+    public function ping(Extension $extension, string $token, string $omsId): PingResponse
+    {
+        $url = sprintf('/api/v2/%s/ping', (string)$extension);
+        $result = $this->request($token, 'GET', $url, ['omsId' => $omsId]);
+
+        /* @noinspection PhpIncompatibleReturnTypeInspection */
+        return $this->serializer->deserialize(PingResponse::class, $result);
     }
 
     /**
