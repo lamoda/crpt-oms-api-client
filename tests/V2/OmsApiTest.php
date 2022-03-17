@@ -18,6 +18,7 @@ use Lamoda\OmsClient\V2\Dto\CreateOrderForEmissionICRequestLp;
 use Lamoda\OmsClient\V2\Dto\CreateOrderForEmissionICResponse;
 use Lamoda\OmsClient\V2\Dto\GetICBufferStatusResponse;
 use Lamoda\OmsClient\V2\Dto\GetICsFromOrderResponse;
+use Lamoda\OmsClient\V2\Dto\GetIntegrationConnectionResponse;
 use Lamoda\OmsClient\V2\Dto\PingResponse;
 use Lamoda\OmsClient\V2\Extension;
 use Lamoda\OmsClient\V2\OmsApi;
@@ -460,4 +461,55 @@ final class OmsApiTest extends TestCase
         $this->assertEquals($expectedResult, $result);
     }
 
+    public function testGetIntegrationConnection(): void
+    {
+        $this->client->expects($this->once())
+            ->method('request')
+            ->with(
+                'POST',
+                'api/v2/integration/connection',
+                [
+                    RequestOptions::BODY => $requestBody = json_encode([
+                        'address' => $address = 'Kremlin 1, Moscow, Russia'
+                    ]),
+                    RequestOptions::HEADERS => [
+                        'X-RegistrationKey' => $registrationKey = 'registration-key-received-from-ismp-support',
+                        'X-Signature' => $signature = 'signature',
+                        'Content-Type' => 'application/json',
+                    ],
+                    RequestOptions::QUERY => [
+                        'omsId' => $omsId = 'oms-id-string',
+                    ],
+                    RequestOptions::HTTP_ERRORS => true,
+                ]
+            )
+            ->willReturn(
+                (new Response())
+                    ->withBody(stream_for(self::API_RESPONSE))
+            );
+
+        $expectedResult = new GetIntegrationConnectionResponse(GetIntegrationConnectionResponse::STATUS_SUCCESS, $address, null);
+        $this->serializer->expects($this->once())
+            ->method('deserialize')
+            ->with(
+                GetIntegrationConnectionResponse::class,
+                self::API_RESPONSE
+            )
+            ->willReturn($expectedResult);
+
+
+        $signer = $this->createMock(SignerInterface::class);
+        $signer->method('sign')
+            ->with($requestBody)
+            ->willReturn($signature);
+
+        $result = $this->api->getIntegrationConnection(
+            $address,
+            $omsId,
+            $registrationKey,
+            $signer
+        );
+
+        $this->assertEquals($expectedResult, $result);
+    }
 }

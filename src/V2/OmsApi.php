@@ -17,6 +17,7 @@ use Lamoda\OmsClient\V2\Dto\CreateOrderForEmissionICRequest;
 use Lamoda\OmsClient\V2\Dto\CreateOrderForEmissionICResponse;
 use Lamoda\OmsClient\V2\Dto\GetICBufferStatusResponse;
 use Lamoda\OmsClient\V2\Dto\GetICsFromOrderResponse;
+use Lamoda\OmsClient\V2\Dto\GetIntegrationConnectionResponse;
 use Lamoda\OmsClient\V2\Dto\PingResponse;
 use Lamoda\OmsClient\V2\Signer\SignerInterface;
 
@@ -124,6 +125,22 @@ final class OmsApi
         return $this->serializer->deserialize(CloseICArrayResponse::class, $result);
     }
 
+    public function getIntegrationConnection(string $address, string $omsId, string $registrationKey, SignerInterface $signer = null): GetIntegrationConnectionResponse {
+        $body = json_encode(['address' => $address]);
+
+        $headers = [
+            'X-RegistrationKey' => $registrationKey
+        ];
+        $headers = $this->appendSignatureHeader($headers, $body, $signer);
+
+        $result = $this->request(null, 'POST', '/api/v2/integration/connection', [
+            'omsId' => $omsId,
+        ], $body, $headers);
+
+        /* @noinspection PhpIncompatibleReturnTypeInspection */
+        return $this->serializer->deserialize(GetIntegrationConnectionResponse::class, $result);
+    }
+
     public function ping(Extension $extension, string $token, string $omsId): PingResponse
     {
         $url = sprintf('/api/v2/%s/ping', (string)$extension);
@@ -137,19 +154,21 @@ final class OmsApi
      * @throws OmsRequestErrorException
      */
     private function request(
-        string $token,
+        ?string $token,
         string $method,
         string $uri,
         array $query = [],
         $body = null,
         $headers = []
-    ): string {
+    ): string
+    {
+        $headers['Content-Type'] = 'application/json';
+        if ($token != null) {
+            $headers['clientToken'] = $token;
+        }
         $options = [
             RequestOptions::BODY => $body,
-            RequestOptions::HEADERS => array_merge($headers, [
-                'Content-Type' => 'application/json',
-                'clientToken' => $token,
-            ]),
+            RequestOptions::HEADERS => $headers,
             RequestOptions::QUERY => $query,
             RequestOptions::HTTP_ERRORS => true,
         ];
