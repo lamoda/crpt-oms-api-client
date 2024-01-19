@@ -5,6 +5,7 @@ Lamoda CRPT OMS Api Client
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/lamoda/crpt-oms-api-client/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/lamoda/crpt-oms-api-client/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/lamoda/crpt-oms-api-client/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/lamoda/crpt-oms-api-client/?branch=master)
 [![Build Status](https://scrutinizer-ci.com/g/lamoda/crpt-oms-api-client/badges/build.png?b=master)](https://scrutinizer-ci.com/g/lamoda/crpt-oms-api-client/build-status/master)
+[![Build Status](https://github.com/lamoda/crpt-oms-api-client/workflows/CI/badge.svg?branch=master)](https://github.com/lamoda/crpt-oms-api-client/workflows/CI/badge.svg?branch=master)
 
 ## Installation
 
@@ -51,6 +52,6 @@ $omsApi = new OmsApi($client, $serializer);
 
 It is also possible to send signed OMS requests for orders.
 
-To do that implement `\Lamoda\OmsClient\V2\Signer\SignerInterface`. 
+To do that implement `\Lamoda\OmsClient\V2\Signer\SignerInterface`.
 
 Signer must return signature for the given data (no data itself transformation is required).
