@@ -25,6 +25,11 @@ abstract class CreateOrderForEmissionICRequest
      */
     private $products;
 
+    abstract public function getContactPerson(): string;
+    abstract public function getReleaseMethodType(): string;
+    abstract public function getCreateMethodType(): string;
+    abstract public function getProductionOrderId(): string;
+
     /**
      * @param OrderProduct[] $products
      */
